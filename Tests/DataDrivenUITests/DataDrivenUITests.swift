@@ -3,7 +3,7 @@ import XCTest
 @testable import DataDrivenUI
 
 final class DataDrivenUITests: XCTestCase {
-    func testExample() throws {
+    func testExample() {
         struct ExampleComposedView: ComposableView {
             struct Content {
                 let name: String
@@ -51,5 +51,72 @@ final class DataDrivenUITests: XCTestCase {
         viewProducer.capabilities.updateName("World")
 
         XCTAssertEqual(viewProducer.content.name, "World")
+    }
+
+    func testCounter() {
+        struct CounterView: ComposableView {
+            struct Content {
+                let count: String
+            }
+
+            struct Capabilities {
+                let increment: () -> Void
+                let decrement: () -> Void
+            }
+
+            let content: Content
+            let capabilities: Capabilities
+
+            var body: some View {
+                VStack {
+                    Text(content.count)
+                    HStack {
+                        Button(action: capabilities.decrement, label: { Text("-") })
+                        Button(action: capabilities.increment, label: { Text("+") })
+                    }
+                }
+                .padding()
+            }
+        }
+
+        class CounterViewModel: ViewProducing {
+            typealias ComposedView = CounterView
+
+            @Published private var count: Int = 0
+
+            var content: Content {
+                Content(
+                    count: "\(count)"
+                )
+            }
+
+            var capabilities: Capabilities {
+                Capabilities(
+                    increment: increment,
+                    decrement: decrement
+                )
+            }
+
+            private func increment() {
+                count += 1
+            }
+
+            private func decrement() {
+                count -= 1
+            }
+        }
+
+        let counterViewModel = CounterViewModel()
+
+        XCTAssertEqual(counterViewModel.content.count, "0")
+
+        counterViewModel.capabilities.increment()
+
+        XCTAssertEqual(counterViewModel.content.count, "1")
+
+        counterViewModel.capabilities.decrement()
+        counterViewModel.capabilities.decrement()
+
+        XCTAssertEqual(counterViewModel.content.count, "-1")
     }
 }
