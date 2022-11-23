@@ -4,7 +4,7 @@ import XCTest
 
 final class DataDrivenUITests: XCTestCase {
     func testExample() throws {
-        struct ExampleComposedView: ComposedView {
+        struct ExampleComposedView: ComposableView {
             struct Content {
                 let name: String
             }
@@ -25,7 +25,7 @@ final class DataDrivenUITests: XCTestCase {
         }
 
         class ExampleViewProducer: ViewProducing {
-            typealias RootView = ExampleComposedView
+            typealias ComposedView = ExampleComposedView
 
             @Published private var name: String = "Tests"
 

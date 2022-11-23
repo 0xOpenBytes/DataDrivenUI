@@ -1,23 +1,19 @@
 import SwiftUI
 
 public protocol ViewProducing: ObservableObject {
-    associatedtype RootView: ComposedView
-    
-    typealias Content = RootView.Content
-    typealias Capabilities = RootView.Capabilities
-    
+    associatedtype ComposedView: ComposableView
+
+    typealias Content = ComposedView.Content
+    typealias Capabilities = ComposedView.Capabilities
+
     var content: Content { get }
     var capabilities: Capabilities { get }
-    
-    var rootView: RootView { get }
+
+    var view: ComposedView { get }
 }
 
 extension ViewProducing {
-    func view(content: Content, capabilities: Capabilities) -> RootView {
-        RootView(content: content, capabilities: capabilities)
-    }
-    
-    public var rootView: RootView {
-        view(content: content, capabilities: capabilities)
+    public var view: ComposedView {
+        ComposedView(content: content, capabilities: capabilities)
     }
 }
